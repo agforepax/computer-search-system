@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบค้นหาชื่อและคอมพิวเตอร์</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 ระบบค้นหาชื่อและคอมพิวเตอร์</h1>
+            <p>จัดการและค้นหาข้อมูลบุคคลและคอมพิวเตอร์อย่างง่ายดาย</p>
+        </div>
+
+        <div class="search-section">
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="ค้นหาชื่อ, ผู้ใช้งาน, แผนก, ยี่ห้อ, รุ่น, IP Address หรือข้อมูลอื่นๆ...">
+                <button class="search-btn" onclick="searchData()">🔍 ค้นหา</button>
+                <button class="search-btn add-btn" onclick="openModal()">➕ เพิ่มข้อมูล</button>
+            </div>
+
+            <div class="filter-section">
+                <button class="filter-btn active" onclick="filterData('all')">ทั้งหมด</button>
+                <button class="filter-btn" onclick="filterData('person')">👤 บุคคล</button>
+                <button class="filter-btn" onclick="filterData('computer')">💻 คอมพิวเตอร์</button>
+            </div>
+
+            <div id="results" class="results"></div>
+        </div>
+    </div>
+
+    <!-- Modal for adding new data -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>เพิ่มข้อมูลใหม่</h2>
+            <form id="dataForm">
+                <div class="form-group">
+                    <label for="dataType">ประเภทข้อมูล:</label>
+                    <select id="dataType" onchange="toggleFields()">
+                        <option value="person">👤 บุคคล</option>
+                        <option value="computer">💻 คอมพิวเตอร์</option>
+                    </select>
+                </div>
+
+                <!-- Person fields -->
+                <div id="personFields">
+                    <div class="form-group">
+                        <label for="personName">ชื่อ-นามสกุล:</label>
+                        <input type="text" id="personName">
+                    </div>
+                    <div class="form-group">
+                        <label for="personEmail">อีเมล:</label>
+                        <input type="email" id="personEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="personPhone">เบอร์โทร:</label>
+                        <input type="tel" id="personPhone">
+                    </div>
+                    <div class="form-group">
+                        <label for="personPosition">แผนก:</label>
+                        <input type="text" id="personPosition">
+                    </div>
+                </div>
+
+                <!-- Computer fields -->
+                <div id="computerFields" style="display: none;">
+                    <div class="form-group">
+                        <label for="computerName">ชื่อคอมพิวเตอร์:</label>
+                        <input type="text" id="computerName" placeholder="เช่น PC-001, LAPTOP-HR-01">
+                    </div>
+                    <div class="form-group">
+                        <label for="ownerName">ชื่อผู้ใช้งาน:</label>
+                        <input type="text" id="ownerName" placeholder="ชื่อ-นามสกุล ผู้ใช้งาน">
+                    </div>
+                    <div class="form-group">
+                        <label for="department">แผนก/หน่วยงาน:</label>
+                        <input type="text" id="department" placeholder="เช่น IT, HR, การเงิน">
+                    </div>
+                    <div class="form-group">
+                        <label for="location">ตำแหน่งที่ตั้ง:</label>
+                        <input type="text" id="location" placeholder="เช่น ชั้น 2 ห้อง 201">
+                    </div>
+                    <div class="form-group">
+                        <label for="computerBrand">ยี่ห้อ:</label>
+                        <select id="computerBrand">
+                            <option value="">-- เลือกยี่ห้อ --</option>
+                            <option value="Dell">Dell</option>
+                            <option value="HP">HP</option>
+                            <option value="Lenovo">Lenovo</option>
+                            <option value="ASUS">ASUS</option>
+                            <option value="Acer">Acer</option>
+                            <option value="Apple">Apple</option>
+                            <option value="MSI">MSI</option>
+                            <option value="Samsung">Samsung</option>
+                            <option value="Fujitsu">Fujitsu</option>
+                            <option value="Toshiba">Toshiba</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="computerModel">รุ่น:</label>
+                        <input type="text" id="computerModel" placeholder="เช่น OptiPlex 7090, ThinkPad X1">
+                    </div>
+                    <div class="form-group">
+                        <label for="computerType">ประเภทเครื่อง:</label>
+                        <select id="computerType">
+                            <option value="">-- เลือกประเภท --</option>
+                            <option value="Desktop">Desktop</option>
+                            <option value="Laptop">Laptop</option>
+                            <option value="All-in-One">All-in-One</option>
+                            <option value="Server">Server</option>
+                            <option value="Workstation">Workstation</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="computerSerial">Serial Number:</label>
+                        <input type="text" id="computerSerial" placeholder="หมายเลขเครื่อง">
+                    </div>
+                    <div class="form-group">
+                        <label for="assetNumber">Asset Number:</label>
+                        <input type="text" id="assetNumber" placeholder="รหัสทรัพย์สิน">
+                    </div>
+                    <div class="form-group">
+                        <label for="purchaseDate">วันที่ซื้อ:</label>
+                        <input type="date" id="purchaseDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="warrantyExpire">วันหมดประกัน:</label>
+                        <input type="date" id="warrantyExpire">
+                    </div>
+                    <div class="form-group">
+                        <label for="computerOS">ระบบปฏิบัติการ:</label>
+                        <select id="computerOS">
+                            <option value="">-- เลือก OS --</option>
+                            <option value="Windows 11 Pro">Windows 11 Pro</option>
+                            <option value="Windows 11 Home">Windows 11 Home</option>
+                            <option value="Windows 10 Pro">Windows 10 Pro</option>
+                            <option value="Windows 10 Home">Windows 10 Home</option>
+                            <option value="macOS Ventura">macOS Ventura</option>
+                            <option value="macOS Monterey">macOS Monterey</option>
+                            <option value="macOS Big Sur">macOS Big Sur</option>
+                            <option value="Ubuntu 22.04">Ubuntu 22.04</option>
+                            <option value="Ubuntu 20.04">Ubuntu 20.04</option>
+                            <option value="CentOS">CentOS</option>
+                            <option value="อื่นๆ">อื่นๆ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="processor">หน่วยประมวลผล (CPU):</label>
+                        <input type="text" id="processor" placeholder="เช่น Intel Core i7-12700K, AMD Ryzen 5 5600X">
+                    </div>
+                    <div class="form-group">
+                        <label for="memory">หน่วยความจำ (RAM):</label>
+                        <input type="text" id="memory" placeholder="เช่น 16GB DDR4, 32GB DDR5">
+                    </div>
+                    <div class="form-group">
+                        <label for="storage">หน่วยเก็บข้อมูล:</label>
+                        <input type="text" id="storage" placeholder="เช่น 512GB SSD, 1TB HDD + 256GB SSD">
+                    </div>
+                    <div class="form-group">
+                        <label for="graphicsCard">การ์ดแสดงผล:</label>
+                        <input type="text" id="graphicsCard" placeholder="เช่น NVIDIA RTX 3060, Intel UHD Graphics">
+                    </div>
+                    <div class="form-group">
+                        <label for="networkCard">การ์ดเครือข่าย:</label>
+                        <input type="text" id="networkCard" placeholder="เช่น Intel Gigabit Ethernet">
+                    </div>
+                    <div class="form-group">
+                        <label for="ipAddress">IP Address:</label>
+                        <input type="text" id="ipAddress" placeholder="เช่น 192.168.1.100">
+                    </div>
+                    <div class="form-group">
+                        <label for="macAddress">MAC Address:</label>
+                        <input type="text" id="macAddress" placeholder="เช่น 00:1B:44:11:3A:B7">
+                    </div>
+                    <div class="form-group">
+                        <label for="monitorInfo">จอแสดงผล:</label>
+                        <input type="text" id="monitorInfo" placeholder="เช่น Dell 24 นิ้ว Full HD">
+                    </div>
+                    <div class="form-group">
+                        <label for="peripherals">อุปกรณ์เสริม:</label>
+                        <textarea id="peripherals" rows="2" placeholder="เช่น เมาส์, คีย์บอร์ด, ลำโพง, เครื่องพิมพ์"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="installedSoftware">Software ที่ติดตั้ง:</label>
+                        <textarea id="installedSoftware" rows="3" placeholder="เช่น Microsoft Office 365, Adobe Acrobat, Antivirus"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="computerStatus">สถานะ:</label>
+                        <select id="computerStatus">
+                            <option value="ใช้งานปกติ">ใช้งานปกติ</option>
+                            <option value="ชำรุด">ชำรุด</option>
+                            <option value="ซ่อม">ซ่อม</option>
+                            <option value="จำหน่าย">จำหน่าย</option>
+                            <option value="สำรอง">สำรอง</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">หมายเหตุ:</label>
+                        <textarea id="notes" rows="3" placeholder="ข้อมูลเพิ่มเติม เช่น ปัญหาที่พบ, การปรับปรุง"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="search-btn">💾 บันทึก</button>
+                    <button type="button" class="search-btn close-btn" onclick="closeModal()">❌ ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div> 
+
+<script src="script.js"></script>
+
+</body>
+</html>
